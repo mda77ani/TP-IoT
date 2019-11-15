@@ -1,0 +1,60 @@
+#!/bin/bash
+
+help () {
+	echo
+	echo "[*] For delivery ratio statistics run: "
+	echo "[*] ./simu -traffic -interv <seconds> "
+	echo
+	echo
+	echo "[*] For duty cycle statistics run:"
+	echo "[*] ./simu -dutycycle -BO <value> "
+	echo
+	exit
+}
+
+if [ "$#" -lt 3 ]
+then
+	help
+fi
+
+
+
+if [ "$1" == "-traffic" ] && [ "$2" == "-interv" ]; then
+	echo "[+] Running simulation"
+	ns wpan_demo2.tcl -inter_pkt_interv $3 -BO 4 &> /dev/null
+	echo "[+] Data analysis"
+	echo	
+	cat wpan_demo2.tr | awk -f delivery-ratio.awk
+elif [ "$1" == "-dutycycle" ] && [ "$2" == "-BO" ]; then
+	echo "[+] Running simulation"
+	ns wpan_demo2.tcl -inter_pkt_interv 0.2 -BO $3 &> /dev/null
+	echo "[+] Data analysis"	
+	echo	
+	cat wpan_demo2.tr | awk -f duty-cycle.awk
+else
+	help
+fi
+
+
+
+# 
+# 0.005  42 19
+# 
+# 0.001  48 17
+# 
+# 0.5    37 17
+# 
+# 1      92 3
+#
+# 2      93 3
+#
+# 3      93 2
+# 
+# 4      90 3
+# 
+# 5      95 0
+# 
+# 6      91 3
+# 
+# 10     92 1
+
